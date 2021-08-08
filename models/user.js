@@ -27,7 +27,7 @@ const studentSchema = mongoose.Schema({
     },
     courses:[{
         course:{
-            type:[String]
+            type:mongoose.Schema.Types.ObjectId
         }
     }],
     tokens:[{
@@ -47,6 +47,15 @@ const studentSchema = mongoose.Schema({
 },
     {timestamps:true}
 )
+
+studentSchema.methods.toJSON = function(){
+    const user = this.toObject()
+    deletedElements = ['password','tokens']
+    deletedElements.forEach(element => {
+        delete user[element]
+    });
+    return user
+}
 
 studentSchema.pre('save',async function(){
     const student = this
@@ -93,6 +102,16 @@ studentSchema.statics.deleteUser = async (email) => {
     const x =  await Student.findByEmail(email)
     if(!x) throw new Error("Invalid Email")
     await Student.deleteOne({email})
+}
+
+studentSchema.statics.addCourse = async function(courseId,userId){
+    const student = await Student.findOne({'_id':userId})
+    const course = courseId.toString()
+    const courseFound = await Student.findOne({course})
+    if(courseFound)
+        return false
+    student.courses = student.courses.concat({course}) 
+    await student.save()
 }
 
 const Student = mongoose.model('Student',studentSchema); 

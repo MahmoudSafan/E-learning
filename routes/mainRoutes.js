@@ -15,4 +15,8 @@ router.post('/deactivate',auth,studentCtrl.deActivate)
 
 router.get('/profile',auth,studentCtrl.profile)
 
+router.post('/addCourse',auth,studentCtrl.addCourse)
+
+router.get('/myClasses',studentCtrl.getUserCourses)
+
 module.exports = router

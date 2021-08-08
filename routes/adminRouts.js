@@ -9,6 +9,6 @@ router.get('/students/:userId',adminCtrl.showSingleStudent)
 
 router.post('/deleteUser',adminCtrl.deleteStudent)
 
-router.post('/addCourse',adminCtrl.addCourse)
+router.post('/addCourse',auth,adminCtrl.addCourse)
 
 module.exports = router

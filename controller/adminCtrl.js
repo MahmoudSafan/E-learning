@@ -58,11 +58,14 @@ const deleteStudent = async (req,res)=>{
     }
 }
 
-const addCourse = (req,res) =>{
+const addCourse = async (req,res) =>{
     try{
         
-        const courseData = new Course(req.body)
-        courseData.save() 
+        const courseData = new Course({
+            userId:req.user._id,
+            ...req.body
+        })
+        await courseData.save() 
         
         res.status(200).send({
             apiStatus:true,

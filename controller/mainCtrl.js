@@ -28,7 +28,7 @@ const login = async (req,res)=>{
     try{
        student =  await Student.login(req.body.email,req.body.password)
        student.generateToken()
-       console.log(student);
+    // console.log(student);
 
        res.status(200).send({
            apiStatus:true,
@@ -108,6 +108,50 @@ const logout = async (req,res) =>{
     })
 }
 
+const addCourse = async (req,res)=>{
+    try{
+        // console.log(req.body.courseId,req.user._id);
+    courseSearch = Student.findOne({course:req.body.courseId.toString()})
+        if(courseSearch){
+            res.status(400).send({
+                apiStatus:false,
+                message:"course alredy inrolled"
+            })
+        }
+        else{
+        Student.addCourse(req.body.courseId,req.user._id)
+        res.status(200).send({
+            apiStatus:true,
+            message:"course was added successfuly"
+        })
+    }
+    }
+    catch(e){
+        res.status(500).send({
+            apiStatus:false,
+            data:e.message
+        })
+    }
+}
+
+const getUserCourses = async (req,res)=>{
+    try{
+        await req.user.populate({
+            path:"Courses"
+        }).execPopulate()
+        res.status(200).send({
+            apiStatus:true,
+            data:{user:res.user,course:res.course}
+        })
+    }
+    catch(e){
+        res.status(500).send({
+            apiStatus:false,
+            data:e.message
+        })
+    }
+}
+
 module.exports = {
     signUpStudent,
     login,
@@ -115,4 +159,6 @@ module.exports = {
     profile,
     activate,
     deActivate,
+    getUserCourses,
+    addCourse,
 }
